@@ -1,9 +1,9 @@
 FROM php:8.3-cli
 
-# ติดตั้ง system dependencies ที่ Laravel ต้องใช้
+# ติดตั้ง dependency ที่จำเป็นสำหรับ Laravel
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo_mysql pdo_sqlite zip gd mbstring xml
+    && docker-php-ext-install pdo_mysql zip gd mbstring
 
 # ติดตั้ง Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -15,9 +15,6 @@ COPY . .
 
 # ติดตั้ง PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
-
-# Generate Laravel APP_KEY (optional ถ้าไม่ set ใน .env)
-# RUN php artisan key:generate
 
 # Render ใช้ port 10000
 EXPOSE 10000
