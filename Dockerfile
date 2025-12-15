@@ -16,6 +16,9 @@ COPY . .
 # ติดตั้ง PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# 
+RUN chmod -R 775 database storage bootstrap/cache
+
 # Render ใช้ port 10000
 EXPOSE 10000
 
