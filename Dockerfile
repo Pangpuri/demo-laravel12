@@ -1,11 +1,11 @@
 FROM php:8.3-cli
 
-# Install system dependencies
+# ติดตั้ง system dependencies ที่ Laravel ต้องใช้
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libpng-dev \
-    && docker-php-ext-install pdo pdo_sqlite zip
+    git unzip libzip-dev libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install pdo_mysql pdo_sqlite zip gd mbstring xml
 
-# Install Composer
+# ติดตั้ง Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
@@ -13,11 +13,14 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
-# Install PHP dependencies
+# ติดตั้ง PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Render uses port 10000
+# Generate Laravel APP_KEY (optional ถ้าไม่ set ใน .env)
+# RUN php artisan key:generate
+
+# Render ใช้ port 10000
 EXPOSE 10000
 
-# Start Laravel
-CMD php -S 0.0.0.0:10000 -t public
+# Start Laravel (serve public folder)
+CMD php artisan serve --host 0.0.0.0 --port 10000
